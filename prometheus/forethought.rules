@@ -5,3 +5,9 @@ groups:
     expr: avg without (job) (up{instance="forethought:5000"})
   - alert: ForethoughtAppDown
     expr: job:uptime:average:forethought < .75
+    for: 5m
+    annotations:
+      overview: '{{ printf "%.2f" $value }}% instances are up for {{ $labels.instance }}'
+    labels:
+      severity: page
+      team: devops

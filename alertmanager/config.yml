@@ -1,7 +1,20 @@
 route:
-    receiver: 'pager'
+  receiver: 'slack'
+  group_by: ['alertname']
+  repeat_interval: 1m
+  routes:
+    - match:
+        severity: page
+      group_by: ['team']
+      receiver: 'slack'
+      routes:
+        - match:
+            team: devops
+          receiver: 'slack'
 
 receivers:
-    - name: 'pager'
-      webhook_configs:
-      - url: https://ngrok.io # replace with your PagerTree webhook url
+- name: 'slack'
+  slack_configs:
+    - channel: "#fdn-sre"
+      api_url: https://hooks.slack.com/services/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
+      text: "Overview: {{ .CommonAnnotations.overview }}"
