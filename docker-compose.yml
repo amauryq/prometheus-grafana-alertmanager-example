@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 
 volumes:
     prometheus_data: {}
@@ -7,7 +7,7 @@ volumes:
 services:
 
   prometheus:
-    image: prom/prometheus:v2.0.0
+    image: prom/prometheus:v2.22.1
     volumes:
       - ./prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus
@@ -28,22 +28,22 @@ services:
     deploy:
       mode: global
 
-  node-exporter:
-    image: prom/node-exporter
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - --collector.filesystem.ignored-mount-points
-      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
-    ports:
-      - 9100:9100
-    restart: always
-    deploy:
-      mode: global
+#  node-exporter:
+#    image: prom/node-exporter
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.sysfs=/host/sys'
+#      - --collector.filesystem.ignored-mount-points
+#      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+#    ports:
+#      - 9100:9100
+#    restart: always
+#    deploy:
+#      mode: global
 
   alertmanager:
     image: prom/alertmanager:v0.12.0
@@ -72,7 +72,7 @@ services:
       mode: global
 
   grafana:
-    image: grafana/grafana:5.4.2
+    image: grafana/grafana:7.3.1
     depends_on:
       - prometheus
     ports:
@@ -84,12 +84,17 @@ services:
     env_file:
       - config.monitoring
 
-  blackbox_exporter:
-    image: prom/blackbox-exporter:v0.10.0
+  # blackbox_exporter:
+  #   image: prom/blackbox-exporter:v0.10.0
+  #   ports:
+  #     - 9115:9115
+  #   volumes:
+  #     - ./blackboxexporter/:/etc/blackboxexporter/
+  #   command:
+  #     - '--config.file=/etc/blackboxexporter/config.yml'
+  #   restart: always
+
+  forethought:
+    image: forethought:latest
     ports:
-      - 9115:9115
-    volumes:
-      - ./blackboxexporter/:/etc/blackboxexporter/
-    command:
-      - '--config.file=/etc/blackboxexporter/config.yml'
-    restart: always
+      - 5000:5000

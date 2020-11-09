@@ -1,0 +1,7 @@
+groups:
+- name: uptime
+  rules:
+  - record: job:uptime:average:forethought
+    expr: avg without (job) (up{instance="forethought:5000"})
+  - alert: ForethoughtAppDown
+    expr: job:uptime:average:forethought < .75
